@@ -1,0 +1,29 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="lassensus",
+    version="0.1.0",
+    packages=find_packages(),
+    install_requires=[
+        "biopython>=1.79",
+        "pandas>=1.3.0",
+        "requests>=2.26.0",
+    ],
+    entry_points={
+        "console_scripts": [
+            "lassensus=lassensus.lassensus:main",
+        ],
+    },
+    python_requires=">=3.6",
+    author="Daan Jansen",
+    author_email="your.email@example.com",
+    description="A tool for Lassa virus consensus sequence generation",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/DaanJansen94/Lassensus",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+) 

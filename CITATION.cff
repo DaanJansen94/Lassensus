@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Jansen
+    given-names: Daan
+    orcid: https://orcid.org/0000-0003-4612-6891
+  - family-names: Laumen
+    given-names: Jolein
+    orcid: https://orcid.org/0000-0003-0168-5622
+  - family-names: Siebenmann
+    given-names: Emma
+  - family-names: Vercauteren
+    given-names: Koen
+    orcid: https://orcid.org/0000-0003-1472-9938
+doi: "XX.XXXX/zenodo.XXXXXX"
+title: "Lassenssus: A Command-Line Tool for Lassa virus consensus sequence generation from long-read sequencing data."
+version: v0.0.1
+url: github.com/DaanJansen94/LassaSeq
+date-released: 2025-04-13
+abstract: "A command-line tool for generating consensus genomes of highly divergent Lassa viruses through automated reference selection using long-read sequencing data."
