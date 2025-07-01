@@ -6,8 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/DaanJansen94/Lassensus/archive/v{{ version }}.tar.gz
-  sha256: a74167dc4efcdcf829785f256bf213e1b6bab525059a312dbc69013a085117bb
+  url: https://github.com/DaanJansen94/lassensus/archive/v0.0.2.tar.gz
+  sha256: 91024616f3be9bdb92def3ce950d62a87aa83c77a10ae980c3ea649f006f1da5
 
 build:
   number: 0
