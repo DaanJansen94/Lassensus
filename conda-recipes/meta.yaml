@@ -15,7 +15,6 @@ build:
   entry_points:
     - lassensus=lassensus.lassensus:main
   script: |
-    conda install -y -c bioconda minimap2 samtools ivar lassaseq seqtk medaka
     {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x') }}
@@ -25,19 +24,18 @@ requirements:
     - python=3.11
     - pip
     - setuptools
-    - conda
   run:
     - python=3.11
     - minimap2
     - samtools
     - ivar
-    - lassaseq
     - seqtk
-    - medaka
     - numpy >=1.20.0
     - biopython >=1.80
     - pandas
     - requests >=2.25.0
+    - lassaseq
+    - medaka
 
 test:
   imports:
