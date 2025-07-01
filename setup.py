@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="lassensus",
-    version="0.0.1",
+    version="0.0.2",
     packages=find_packages(),
     install_requires=[
         "biopython>=1.79",
@@ -20,7 +20,7 @@ setup(
     description="A tool for Lassa virus consensus sequence generation",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/DaanJansen94/Lassensus",
+    url="https://github.com/DaanJansen94/lassensus",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GPL License",
