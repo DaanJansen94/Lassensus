@@ -23,7 +23,7 @@ setup(
     url="https://github.com/DaanJansen94/Lassensus",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GPL License",
         "Operating System :: OS Independent",
     ],
 ) 
