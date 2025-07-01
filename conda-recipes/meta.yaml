@@ -48,7 +48,7 @@ about:
   license: GPL-3.0
   license_family: GPL
   license_file: LICENSE
-  summary: Tool for creating Lassa virus consensus sequences
+  summary: Tool for creating Lassa virus consensus sequences.
   description: |
     Lassensus is a command-line tool for creating consensus sequences from Lassa virus sequencing data.
     It provides a streamlined workflow for processing raw sequencing data into high-quality consensus sequences.
