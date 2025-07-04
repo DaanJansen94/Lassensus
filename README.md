@@ -5,26 +5,50 @@ To do this, all near-complete Lassa virus genomes available in GenBank are downl
 
 ## Installation
 
-1. First, create and activate a dedicated conda environment with all required tools:
+### Option 1: Using Conda (Recommended)
+Install Lassensus via Conda:
+
 ```bash
-# Create conda environment and install all dependencies in one line
-conda create -n lassensus -c bioconda python=3.11 minimap2 samtools ivar lassaseq seqtk medaka
+conda create -n lassensus -c bioconda lassensus -y
 conda activate lassensus
 ```
 
-2. Clone and install the Lassensus package (this will install Python dependencies):
+### Option 2: From Source Code
+Create and activate a new conda environment:
 
 ```bash
-# Clone the repository
+conda create -n lassensus -c bioconda python=3.11 minimap2 samtools ivar lassaseq seqtk medaka -y
+conda activate lassensus
+```
+
+Install lassensus:
+
+```bash
 git clone https://github.com/DaanJansen94/lassensus.git
 cd lassensus
-
-# Install the package and Python dependencies
 pip install .
 ```
 
+**Re-installation (when updates are available):**
+
+```bash
+conda activate lassensus  # Make sure you're in the right environment
+cd lassensus
+git pull  # Get the latest updates from GitHub
+pip uninstall lassensus -y
+pip install .
+```
+
+**Note:** Any time you modify the code or pull updates from GitHub, you need to reinstall the package using these commands for the changes to take effect.
+
 ## Usage
 
+If you installed via conda (Option 1):
+```bash
+lassensus --input_dir /path/to/input --output_dir /path/to/output [options]
+```
+
+If you installed from source (Option 2):
 ```bash
 conda activate lassensus
 lassensus --input_dir /path/to/input --output_dir /path/to/output [options]
