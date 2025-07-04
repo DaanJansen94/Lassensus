@@ -16,8 +16,8 @@ conda activate lassensus
 
 ```bash
 # Clone the repository
-git clone https://github.com/DaanJansen94/Lassensus.git
-cd Lassensus
+git clone https://github.com/DaanJansen94/lassensus.git
+cd lassensus
 
 # Install the package and Python dependencies
 pip install .
