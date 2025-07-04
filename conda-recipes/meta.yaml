@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/DaanJansen94/lassensus/archive/v0.0.3.tar.gz
-  sha256: # Will be updated after creating the GitHub release
+  sha256: c721ec760a827a4377bb1dcedccebd9128819fc891970f6bec4b71eb85e5e796
 
 build:
   number: 0
