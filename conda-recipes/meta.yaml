@@ -1,13 +1,13 @@
 {% set name = "lassensus" %}
-{% set version = "0.0.2" %}
+{% set version = "0.0.3" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DaanJansen94/lassensus/archive/v0.0.2.tar.gz
-  sha256: 91024616f3be9bdb92def3ce950d62a87aa83c77a10ae980c3ea649f006f1da5
+  url: https://github.com/DaanJansen94/lassensus/archive/v0.0.3.tar.gz
+  sha256: # Will be updated after creating the GitHub release
 
 build:
   number: 0
