@@ -8,6 +8,10 @@ setup(
         "biopython>=1.79",
         "pandas>=1.3.0",
         "requests>=2.26.0",
+        "numpy<2.0",
+        "h5py~=3.10.0",
+        "ont-mappy",
+        "ont-parasail",
     ],
     entry_points={
         "console_scripts": [

@@ -9,6 +9,9 @@ import logging
 import shutil
 import multiprocessing
 
+# Import functions from reference_selection for rarefaction
+from .reference_selection import count_reads, rarefy_reads
+
 def setup_logging(output_dir):
     """Set up logging configuration."""
     log_file = Path(output_dir) / 'lassensus.log'
@@ -214,19 +217,44 @@ def calculate_completeness(consensus_file, ref_file, refseq_length):
         'completeness_vs_refseq': completeness_vs_refseq
     }
 
-def process_sample(sample_dir, sample_name, output_dir, min_depth=50, min_quality=30, majority_threshold=0.7):
+def process_sample(sample_dir, sample_name, output_dir, min_depth=50, min_quality=30, majority_threshold=0.7, max_reads=1000000):
     """Process a single sample to generate consensus sequences."""
     logger.info(f"\nProcessing sample: {sample_name}")
     
-    # Get input files
-    fastq_file = sample_dir / f"{sample_name}.fastq.gz"
+    # Find the actual input file (either .fastq or .fastq.gz)
+    fastq_file = None
+    for ext in [".fastq.gz", ".fastq"]:
+        potential_file = sample_dir / f"{sample_name}{ext}"
+        if potential_file.exists():
+            fastq_file = potential_file
+            break
+    
+    if fastq_file is None:
+        logger.error(f"Could not find input file for {sample_name} (looked for .fastq and .fastq.gz)")
+        return
+    
+    # Get reference files
     l_ref = sample_dir / f"{sample_name}_L_reference.fasta"
     s_ref = sample_dir / f"{sample_name}_S_reference.fasta"
     
-    if not all(f.exists() for f in [fastq_file, l_ref, s_ref]):
-        logger.error(f"Missing required files for {sample_name}")
+    if not all(f.exists() for f in [l_ref, s_ref]):
+        logger.error(f"Missing required reference files for {sample_name}")
         return
     
+    # Check if rarefaction is needed
+    total_reads = count_reads(fastq_file)
+    logger.info(f"Total reads: {total_reads:,}")
+    
+    if total_reads > max_reads:
+        logger.info(f"Rarefying reads from {total_reads:,} to {max_reads:,}")
+        rarefied_file = sample_dir / f"{sample_name}_rarefied_consensus.fastq.gz"
+        rarefy_reads(fastq_file, rarefied_file, max_reads)
+        fastq_file = rarefied_file
+        logger.info(f"Using rarefied file: {rarefied_file}")
+    else:
+        logger.info(f"Using all {total_reads:,} reads (below max_reads threshold)")
+    
+    # Get input files - references are already found above
     # Process L segment
     l_bam = map_reads(fastq_file, l_ref, sample_dir, sample_name, 'L')
     l_consensus, l_quality = generate_consensus(l_bam, l_ref, sample_dir, sample_name, 'L', 
@@ -347,6 +375,7 @@ def main(args=None):
         parser.add_argument('--min_depth', type=int, default=50, help='Minimum depth for consensus calling (default: 50)')
         parser.add_argument('--min_quality', type=int, default=30, help='Minimum quality for consensus calling (default: 30)')
         parser.add_argument('--majority_threshold', type=float, default=0.7, help='Majority rule threshold (default: 0.7)')
+        parser.add_argument("--max_reads", type=int, default=1000000, help="Maximum number of reads to use for consensus generation (default: 1,000,000)")
         args = parser.parse_args()
     
     # Convert input and output directories to Path objects
@@ -373,7 +402,7 @@ def main(args=None):
     # Process each sample
     for sample in samples:
         sample_dir = consensus_dir / sample
-        process_sample(sample_dir, sample, output_dir, args.min_depth, args.min_quality, args.majority_threshold)
+        process_sample(sample_dir, sample, output_dir, args.min_depth, args.min_quality, args.majority_threshold, args.max_reads)
     
     logger.info("\nConsensus generation complete!")
 

@@ -41,13 +41,28 @@ def get_cpu_count():
         return 4
 
 def count_reads(fastq_file):
-    """Count the number of reads in a FASTQ file."""
+    """Count the number of reads in a FASTQ file (handles both .fastq and .fastq.gz)."""
     try:
-        cmd = ['zcat', str(fastq_file), '|', 'wc', '-l']
-        result = subprocess.run(' '.join(cmd), shell=True, capture_output=True, text=True, check=True)
-        return int(result.stdout.strip()) // 4  # Divide by 4 as each read has 4 lines
+        fastq_file = Path(fastq_file)
+        if str(fastq_file).endswith(".gz"):
+            # Compressed file
+            cmd = ["zcat", str(fastq_file)]
+        else:
+            # Uncompressed file
+            cmd = ["cat", str(fastq_file)]
+        
+        # Count lines and divide by 4
+        cat_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        wc_result = subprocess.run(["wc", "-l"], stdin=cat_process.stdout, capture_output=True, text=True, check=True)
+        cat_process.wait()
+        
+        line_count = int(wc_result.stdout.strip())
+        return line_count // 4  # Divide by 4 as each read has 4 lines
     except subprocess.CalledProcessError as e:
         logger.error(f"Error counting reads in {fastq_file}: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"Unexpected error counting reads in {fastq_file}: {e}")
         sys.exit(1)
 
 def setup_directories(output_dir):
@@ -289,7 +304,17 @@ def rarefy_all_samples(samples, input_dir, output_dir, n_reads=10000):
     rarefied_files = {}
     
     for sample in samples:
-        input_file = input_dir / f"{sample}.fastq.gz"
+        # Find the actual input file (either .fastq or .fastq.gz)
+        input_file = None
+        for ext in [".fastq.gz", ".fastq"]:
+            potential_file = input_dir / f"{sample}{ext}"
+            if potential_file.exists():
+                input_file = potential_file
+                break
+        
+        if input_file is None:
+            logger.error(f"Could not find input file for {sample} (looked for .fastq and .fastq.gz)")
+            continue
         total_reads = count_reads(input_file)
         logger.info(f"\nProcessing {sample}:")
         logger.info(f"Total reads: {total_reads:,}")
@@ -383,9 +408,17 @@ def save_results(sample, best_refs, best_stats, segment_stats, total_reads, outp
     logger.info(f"Saved results to {json_file}")
 
 def find_samples(input_dir):
-    """Find all FASTQ samples in input directory."""
+    """Find all FASTQ samples in input directory (compressed or not)."""
     input_dir = Path(input_dir)
-    fastq_files = list(input_dir.glob('*.fastq.gz'))
+    fastq_files = list(input_dir.glob("*.fastq")) + list(input_dir.glob("*.fastq.gz"))
+    sample_names = set()
+    for f in fastq_files:
+        name = f.name
+        if name.endswith(".fastq.gz"):
+            sample_names.add(name[:-9])
+        elif name.endswith(".fastq"):
+            sample_names.add(name[:-6])
+    return list(sample_names)
     return [f.stem.split('.')[0] for f in fastq_files]
 
 def setup_consensus_directories(output_dir, samples, input_dir):
@@ -411,11 +444,19 @@ def setup_consensus_directories(output_dir, samples, input_dir):
             shutil.copy2(s_ref, sample_dir / f"{sample}_S_reference.fasta")
             logger.info(f"Copied S-segment reference for {sample}")
         
-        # Copy FASTQ file
-        fastq_file = input_dir / f"{sample}.fastq.gz"
-        if fastq_file.exists():
-            shutil.copy2(fastq_file, sample_dir / f"{sample}.fastq.gz")
-            logger.info(f"Copied FASTQ file for {sample}")
+        # Copy FASTQ file (either .fastq or .fastq.gz)
+        fastq_file = None
+        for ext in [".fastq.gz", ".fastq"]:
+            potential_file = input_dir / f"{sample}{ext}"
+            if potential_file.exists():
+                fastq_file = potential_file
+                break
+        
+        if fastq_file is not None:
+            shutil.copy2(fastq_file, sample_dir / fastq_file.name)
+            logger.info(f"Copied FASTQ file for {sample}: {fastq_file.name}")
+        else:
+            logger.warning(f"Could not find FASTQ file for {sample} (looked for .fastq and .fastq.gz)")
     
     return consensus_dir
 
@@ -456,10 +497,22 @@ def main(args=None):
     logger.info(f"\nFound {len(samples)} samples to process:")
     total_reads = 0
     for i, sample in enumerate(samples, 1):
-        read_count = count_reads(input_dir / f"{sample}.fastq.gz")
+        # Find the actual input file (either .fastq or .fastq.gz)
+        input_file = None
+        for ext in [".fastq.gz", ".fastq"]:
+            potential_file = input_dir / f"{sample}{ext}"
+            if potential_file.exists():
+                input_file = potential_file
+                break
+        
+        if input_file is None:
+            logger.warning(f"Could not find input file for {sample} (looked for .fastq and .fastq.gz)")
+            read_count = 0
+        else:
+            read_count = count_reads(input_file)
+        
         total_reads += read_count
         logger.info(f"{i}. {sample} ({read_count:,} reads)")
-    logger.info(f"Total reads across all samples: {total_reads:,}")
     
     logger.info(f"\nOutput will be saved to: {output_dir}")
     logger.info(f"Minimum identity threshold: {args.min_identity}%")

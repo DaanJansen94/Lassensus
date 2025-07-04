@@ -19,8 +19,8 @@ def main():
     parser = argparse.ArgumentParser(description='Lassensus - Lassa virus consensus sequence builder')
     
     # Add main arguments that are common to all commands
-    parser.add_argument('-i', '--input_dir', help='Directory containing input FASTQ files')
-    parser.add_argument('-o', '--output_dir', help='Directory for pipeline output')
+    parser.add_argument('-i', '--input_dir', required=True, help='Directory containing input FASTQ files')
+    parser.add_argument('-o', '--output_dir', required=True, help='Directory for pipeline output')
     parser.add_argument('--min_identity', type=float, default=90.0, help='Minimum identity threshold for reference selection (default: 90.0)')
     parser.add_argument('--genome', type=int, default=2, help='Genome completeness filter (1=Complete, 2=Partial, 3=None)')
     parser.add_argument('--completeness', type=int, default=90, help='Minimum sequence completeness (1-100 percent)')
@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--metadata', type=int, default=4, help='Metadata filter (1=Location, 2=Date, 3=Both, 4=None)')
     parser.add_argument('--min_depth', type=int, default=50, help='Minimum depth for consensus calling (default: 50)')
     parser.add_argument('--min_quality', type=int, default=30, help='Minimum quality score for consensus calling (default: 30)')
+    parser.add_argument("--max_reads", type=int, default=1000000, help="Maximum number of reads to use for consensus generation (default: 1,000,000)")
     parser.add_argument('--majority_threshold', type=float, default=0.7, help='Majority rule threshold (default: 0.7)')
     
     # Optional subcommand for future expansion
@@ -50,6 +51,7 @@ def main():
     consensus_parser.add_argument('--min_depth', type=int, default=50, help='Minimum depth for consensus calling (default: 50)')
     consensus_parser.add_argument('--min_quality', type=int, default=30, help='Minimum quality score for consensus calling (default: 30)')
     consensus_parser.add_argument('--majority_threshold', type=float, default=0.7, help='Majority rule threshold (default: 0.7)')
+    consensus_parser.add_argument("--max_reads", type=int, default=1000000, help="Maximum number of reads to use for consensus generation (default: 1,000,000)")
     
     # Parse arguments
     args = parser.parse_args()
