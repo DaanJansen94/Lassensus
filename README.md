@@ -61,6 +61,41 @@ lassensus --input_dir /path/to/input --output_dir /path/to/output [options]
 
 ### Optional Arguments
 
+#### Reference Selection Parameters
+
+- `--min_identity`: Minimum identity threshold for reference selection (default: 90.0)
+  - Minimum percentage identity required for reads to be considered when selecting the best reference
+
+- `--genome`: Genome completeness filter (1=Complete, 2=Partial, 3=None)
+  - Filter references based on genome completeness annotation
+  - 1: Only complete genomes
+  - 2: Only partial genomes  
+  - 3: No filtering (both complete and partial)
+
+- `--completeness`: Minimum sequence completeness (1-100 percent)
+  - Filter references based on minimum sequence completeness percentage
+  - Value between 1-100 representing minimum completeness required
+
+- `--host`: Host filter (1=Human, 2=Rodent, 3=Both, 4=None)
+  - Filter references based on host organism
+  - 1: Human-derived sequences only
+  - 2: Rodent-derived sequences only
+  - 3: Both human and rodent sequences
+  - 4: No host filtering
+
+- `--metadata`: Metadata filter (1=Location, 2=Date, 3=Both, 4=None)
+  - Filter references based on available metadata
+  - 1: Must have location metadata
+  - 2: Must have date metadata
+  - 3: Must have both location and date metadata
+  - 4: No metadata filtering
+
+#### Consensus Generation Parameters
+
+- `--max_reads`: Maximum number of reads to use for consensus generation (default: 1,000,000)
+  - If input has more reads than this threshold, it will be rarefied down to this number
+  - If input has fewer reads, all reads will be used (no rarefaction)
+
 - `--min_depth`: Minimum depth for consensus calling (default: 50)
   - This is the minimum number of reads that must cover a position to call a consensus base
   - Higher values will result in more stringent consensus calling
@@ -122,7 +157,6 @@ Python dependencies (installed automatically with pip):
 - requests
 
 ## Features
-
 - Automatic reference selection
 - Consensus generation with ivar
 - Consensus polishing with medaka
